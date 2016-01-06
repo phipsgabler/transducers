@@ -1,4 +1,5 @@
-{-# LANGUAGE RankNTypes, TypeFamilies, MultiParamTypeClasses, Arrows#-}
+{-# LANGUAGE RankNTypes #-}
+{-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE LambdaCase #-}
 
 module Data.Transducers (
@@ -62,13 +63,13 @@ class MonoTransducible t where
   monoTransduce :: (Elem t ~ a) => Transducer a a -> t -> t
 
 class Transducible t where
-  transduceWith :: Transducer a b -> (b -> r -> r) -> r -> t a -> r
+  transduce :: Transducer a b -> (b -> r -> r) -> r -> t a -> r
 
 instance Transducible [] where
-  transduceWith (Transducer t) f z x = foldr (t f) z x
+  transduce (Transducer t) f z x = foldr (t f) z x
   
 toList :: Transducer a b -> [a] -> [b]
-toList t xs = transduceWith t (:) [] xs
+toList t xs = transduce t (:) [] xs
 
 
 
