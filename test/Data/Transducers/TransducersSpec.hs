@@ -1,7 +1,10 @@
+{-# LANGUAGE Arrows #-}
+
 module Data.Transducers.TransducersSpec (main, spec) where
 
 import Test.Hspec
 import Test.QuickCheck
+import Control.Arrow
 
 import Data.Transducers
 
@@ -25,9 +28,9 @@ list_test4 = toList (flatmapping (\x -> [x, x])) [1..5]
 -- TREE TESTS
 data Tree a = Leaf | Branch a (Tree a) (Tree a)
 
-foldTree :: (a -> a -> r) -> r -> Tree a -> r
-foldTree _ init Leaf = r
-foldTree f init (Branch a l r) = f a $ f (foldTree f init l) (foldTree f init r)
+-- foldTree :: (a -> r -> r) -> r -> Tree a -> r
+-- foldTree _ init Leaf = init
+-- foldTree f init (Branch a l r) = f a (foldTree f init l) $ f (foldTree f init r)
 
 main :: IO ()
 main = hspec spec

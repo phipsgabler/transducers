@@ -1,12 +1,11 @@
-name:                trancducers
+name:                transducers
 version:             0.1.0.0
-synopsis:            Initial project template from stack, using hspec and quickcheck
+synopsis:            An attempt to translate Cojure's transducer concept. 
 description:         Please see README.md
-homepage:            http://github.com/phipsgabler/trancducers#readme
-license:             BSD3
-license-file:        LICENSE
+homepage:            http://github.com/phipsgabler/transducers#readme
+license:             Unlicense
+license-file:        UNLICENSE
 author:              Philipp Gabler
-maintainer:          example@example.com
 copyright:           2015 Philipp Gabler
 category:            Development
 build-type:          Simple
@@ -21,12 +20,12 @@ library
                      , profunctors
   default-language:    Haskell2010
 
-test-suite trancducers-test
+test-suite transducers-test
   type:                exitcode-stdio-1.0
   hs-source-dirs:      test
   main-is:             Spec.hs
   build-depends:       base
-                     , trancducers
+                     , transducers
                      , hspec
                      , QuickCheck
   ghc-options:         -threaded -rtsopts -with-rtsopts=-N
@@ -34,4 +33,4 @@ test-suite trancducers-test
 
 source-repository head
   type:     git
-  location: https://github.com/phipsgabler/trancducers
+  location: https://github.com/phipsgabler/transducers
