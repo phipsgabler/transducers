@@ -1,13 +1,14 @@
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE LambdaCase #-}
+{-# LANGUAGE Arrows #-}
 
 module Data.Transducers (
     Transducer (..)
   , mapping
   , filtering
-  , concatenating
-  , flatmapping
+  , flattening
+  , flatMapping
   , Transducible
   , MonoTransducible
   , toList
@@ -31,15 +32,16 @@ instance Arrow Transducer where
 
 instance ArrowChoice Transducer where
   left (Transducer t) = Transducer (\cons ->
-                                     \case Left b -> \r -> let cons' = t $ \c r -> cons (Left c) r
-                                                           in cons' b r
+                                     \case Left b -> \r -> (t $ cons . Left) b r
                                            Right d -> \r -> cons (Right d) r)
+
+instance ArrowLoop Transducer where
+  loop (Transducer t) = Transducer (\cons -> \b r -> undefined)
 
 -- unnecessary in theory (cf. WrappedArrow), but instructional.
 instance Profunctor Transducer where
-  lmap f (Transducer t) = Transducer (\cons -> \a r -> (t cons) (f a) r)
-  rmap f (Transducer t) = Transducer (\cons -> \a r -> (t $ \b -> cons (f b)) a r )
-
+  lmap f (Transducer t) = Transducer (\cons -> \c r -> (t cons) (f c) r)
+  rmap f (Transducer t) = Transducer (\cons -> \a r -> (t $ cons . f) a r )
 
 
 
@@ -49,14 +51,22 @@ mapping f = Transducer (\cons -> \a r -> cons (f a) r)
 filtering :: (a -> Bool) -> Transducer a a
 filtering p = Transducer (\cons -> \a r -> if p a then cons a r else r)
 
-concatenating :: Foldable t => Transducer (t a) a
-concatenating = Transducer (\cons -> \as r -> foldr cons r as)
+flattening :: Foldable t => Transducer (t a) a
+flattening = Transducer (\cons -> \as r -> foldr cons r as)
 
-flatmapping :: Foldable t => (a -> t b) -> Transducer a b
-flatmapping f = mapping f >>> concatenating
+flatMapping :: Foldable t => (a -> t b) -> Transducer a b
+flatMapping f = mapping f >>> flattening
 
+-- equivalent to `filtering (const False)`
+dropping :: Transducer a a
+dropping = Transducer (\cons -> \_ r -> r)
 
+-- indexing :: Transducer a (a, Integer)
+-- indexing = proc x -> do
+--   rec 
+  
 
+  
 
 class MonoTransducible t where
   type Elem t :: *

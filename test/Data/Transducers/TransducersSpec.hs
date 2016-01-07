@@ -24,6 +24,8 @@ list_test3 = (`toList` [1..5]) $ proc x -> do
 
 list_test4 = toList (flatmapping (\x -> [x, x])) [1..5]
 
+list_test5 = toList (proc x -> if even x then dropping -< x else returnA -< x) [1..10]
+
 
 -- TREE TESTS
 data Tree a = Leaf | Branch a (Tree a) (Tree a)
