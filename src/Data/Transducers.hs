@@ -2,6 +2,7 @@
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE Arrows #-}
+{-# LANGUAGE TupleSections #-}
 
 module Data.Transducers (
     Transducer (..)
@@ -35,8 +36,9 @@ instance ArrowChoice Transducer where
                                      \case Left b -> \r -> (t $ cons . Left) b r
                                            Right d -> \r -> cons (Right d) r)
 
-instance ArrowLoop Transducer where
-  loop (Transducer t) = Transducer (\cons -> \b r -> undefined)
+-- is this even possible?
+-- instance ArrowLoop Transducer where
+--   loop (Transducer t) = Transducer (\cons -> \b r -> undefined)
 
 -- unnecessary in theory (cf. WrappedArrow), but instructional.
 instance Profunctor Transducer where
@@ -61,10 +63,14 @@ flatMapping f = mapping f >>> flattening
 dropping :: Transducer a a
 dropping = Transducer (\cons -> \_ r -> r)
 
+
+-- HOW TO IMPLEMENT THESE?
+-- reversing :: Transducer a a
+-- reversing = Transducer (\cons -> \a r -> _)
+
 -- indexing :: Transducer a (a, Integer)
 -- indexing = proc x -> do
---   rec 
-  
+--   ???
 
   
 
