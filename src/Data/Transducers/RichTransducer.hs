@@ -36,16 +36,21 @@ newtype RichTransducer a b = RichTransducer (forall r. Reducer b r -> Reducer a 
 
 instance Category RichTransducer where
   id = RichTransducer (\red -> red)
-  (RichTransducer t1) . (RichTransducer t2) =  RichTransducer (\red -> t2 . t1 $ red)
+  (RichTransducer t1) . (RichTransducer t2) =  RichTransducer (t2 . t1)
 
 instance Arrow RichTransducer where
   arr f = RichTransducer $ \(Reducer cons nil fin) -> Reducer (\a r -> cons (f a) r) nil fin
-  first (RichTransducer t) = RichTransducer $ \(Reducer cons nil fin) ->
-    let cons' = \(b, d) r -> case t $ Reducer (\c r -> cons (c, d) r) nil fin of
-          Reducer cons'' nil'' fin'' -> cons'' b r
-    in Reducer cons' nil fin
-  -- Transducer (\cons -> \(b,d) r -> let cons' = t $ \c r -> cons (c, d) r
-  --                                  in cons' b r)
+
+  -- first (RichTransducer t) = RichTransducer $ \(Reducer cons nil fin) ->
+  --   let cons' = \(b, d) r -> case t $ Reducer (\c r -> cons (c, d) r) nil fin of
+  --         Reducer cons'' nil'' fin'' -> cons'' b r
+  --   in Reducer cons' nil fin
+  
+  -- first :: RichTransducer a b -> RichTransducer (a, d) (b, d)
+  first (RichTransducer t) = RichTransducer $ \red@(Reducer cons nil fin) ->
+    Reducer (\(b, d) r -> let red' = Reducer (\c r -> cons (c, d) r) nil fin
+                          in _
+                            ) nil fin
 
 -- instance ArrowChoice RichTransducer where
 --   left (RichTransducer t) = RichTransducer (\cons ->
